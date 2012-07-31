@@ -1,14 +1,23 @@
 (function() {
-	var User = function() {
-		this.username = "";
-	}
+	var global = (function() { return this; }).call();
 
-	function domLoaded() {
-		console.log("Dom loaded");
-		Crane.ready([{"name" : "User", "model" : new User, "origin" : User}], function(newUser) {
-			User = newUser;
+	var main = function() {
+		var User = Crane.model("User",
+		{
+			"username" : "",
+			"password" : "",
+			"checkPassword" : function(password) {
+				console.log("check password");
+			}
 		});
+
+		var usr = new User();
 	};
 
-	document.addEventListener('DOMContentLoaded', domLoaded);
+	if (global.Crane === undefined) {
+		global.craneRunners.push(main);
+	}
+	else {
+		global.Crane.run(main);
+	}
 })();
