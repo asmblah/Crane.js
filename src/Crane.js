@@ -62,72 +62,92 @@
 
 			crane.addModel(self);
 
+			this.hasProperty = function(propertyName) {
+				return (props["_"+propertyName]!==undefined);
+			};
+
+			var parsePropertyDefinition = function(propertyDefinition, propertyName) {
+				props["_"+propertyName] = propertyDefinition;
+
+				getters["_"+propertyName] = new EventEmitter(function() {
+					this.emit("getter", propertyName);
+				}).on('getter', function() {
+					self.emit("getter", propertyName);
+				});
+				setters["_"+propertyName] = new EventEmitter(function() {
+					this.emit("setter", propertyName);
+				}).on('setter', function() {
+					self.emit("setter", propertyName);
+				});
+
+				self.__defineGetter__(propertyName, function() {
+					getters["_"+propertyName].func();
+					return props["_"+propertyName];
+				});
+				self.__defineSetter__(propertyName, function(val) {
+					props["_"+propertyName] = val;
+					setters["_"+propertyName].func();
+				});
+			};
+
+			var parseFunctionDefinition = function(functionDefinition, propertyName) {
+				var functionParameters = crane.getFunctionParams(functionDefinition);
+				var assignmentRegex = /(=\s*this[;|\r|\n])|(=\s?this$)/g;
+				if (assignmentRegex.test(functionDefinition)) {
+					for (var prop in props) {
+						var propRegex = /_(.+)/g;
+						var res = propRegex.exec(prop);
+						if (functionParameters.indexOf(res[1]) == -1) {
+							functionParameters.push(res[1]);
+						}
+					}
+				}
+				var Context = function() {};
+				for(var r = 0, paramCount = functionParameters.length; r < paramCount; r++) {
+					var param = functionParameters[r];
+					setters["_"+param].on('setter', function() {
+						var ret = funcs["_"+propertyName]();
+						self[propertyName] = ret;
+						self.emit('setter', propertyName);
+						delete self[propertyName];
+					});
+				}
+				funcs["_"+propertyName] = function() {
+					var context = new Context();
+					for(var r = 0, paramCount = functionParameters.length; r < paramCount; r++) {
+						var param = functionParameters[r];
+						context[param] = props["_"+param];
+					}
+					return functionDefinition.apply(context);
+				};
+			};
+
+			var parseModelDefinition = function(modelDefinition, propertyName) {
+				models["_"+propertyName] = modelDefinition;
+			};
+
 			forEach(model, function(v, p) {
 				if (typeof model[p] != 'function' && typeof model[p] != 'object') {
 					console.log(p + " is a property");
-					props["_"+p] = model[p];
-
-					getters["_"+p] = new EventEmitter(function() {
-						this.emit("getter", p);
-					}).on('getter', function() {
-						self.emit("getter", p);
-					});
-					setters["_"+p] = new EventEmitter(function() {
-						this.emit("setter", p);
-					}).on('setter', function() {
-						self.emit("setter", p);
-					});
-
-					self.__defineGetter__(p, function() {
-						getters["_"+p].func();
-						return props["_"+p];
-					});
-					self.__defineSetter__(p, function(val) {
-						props["_"+p] = val;
-						setters["_"+p].func();
-					});
+					parsePropertyDefinition(model[p], p);
 				}
 				else if (typeof model[p].prototype !== "undefined") {
 					//Function definition.
 					if (crane.functionDefinitionIsModel(model[p])) {
 						console.log(p + " is a Model definition");
+						//Can't have just a Model definition, it needs to be an instance.
+						model[p] = new model[p]();
+						parseModelDefinition(model[p], p);
 					}
 					else {
 						console.log(p + " is a Function definition");
-						var functionParameters = crane.getFunctionParams(model[p]);
-						var assignmentRegex = /(=\s*this[;|\r|\n])|(=\s?this$)/g;
-						if (assignmentRegex.test(model[p])) {
-							for (var prop in props) {
-								var propRegex = /_(.+)/g;
-								var res = propRegex.exec(prop);
-								if (functionParameters.indexOf(res[1]) == -1) {
-									functionParameters.push(res[1]);
-								}
-							}
-						}
-						var Context = function() {};
-						for(var r = 0, paramCount = functionParameters.length; r < paramCount; r++) {
-							var param = functionParameters[r];
-							setters["_"+param].on('setter', function() {
-								var ret = funcs["_"+p]();
-								self[p] = ret;
-								self.emit('setter', p);
-								delete self[p];
-							});
-						}
-						funcs["_"+p] = function() {
-							var context = new Context();
-							for(var r = 0, paramCount = functionParameters.length; r < paramCount; r++) {
-								var param = functionParameters[r];
-								context[param] = props["_"+param];
-							}
-							return model[p].apply(context);
-						};
+						parseFunctionDefinition(model[p], p);
 					}
 				}
 				else if (model[p] instanceof EventEmitter) {
 					if (crane.hasModel(model[p])) {
 						console.log(p + " is an instance of a Model");
+						parseModelDefinition(model[p], p);
 					}
 					else {
 						console.log(p + " is an instance of an EventEmitter");
@@ -157,7 +177,13 @@
 								}
 								else {
 									if (previousModel !== null) {
-
+										if (previousModel.hasProperty(v)) {
+											boundProperty = true;
+											var bindees = modelBinding[property];
+											forEach(bindees, function(bindee, k) {
+												crane.createDOMBinding(bindee, previousModel, v);
+											});
+										}
 									}
 									else {
 										if (v === splitProperties[0]) {

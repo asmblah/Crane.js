@@ -23,25 +23,25 @@
 			"subObjectOfModels" : {
 				"modelProp" : Crane.model("Stuff",
 				{
-					"key" : "value" //watchable
-				})
+					"key" : "value" //Not watchable due to parent.
+				}) //Not watchable
 			},
 			"subModel" : Crane.model("BankAccount",
 			{
 				"number" : -1, //watchable
 				"type" : "" //watchable
-			}), //Not watchable
+			}), //Internally new'd
 			"subNewedModel" : new Crane.model("Thing",
 			{
-				"number" : -1,
-				"string" : "hello"
+				"number" : -1, //watchable
+				"string" : "hello" //watchable
 			})(),
 			"subNewedModelWithSubNewedModel" : new Crane.model("OtherThing",
 			{
-				"number" : -1,
+				"number" : -1, //watchable
 				"subSubNewedModel" : new Crane.model("SubOtherThing", {
-					"number" : -1,
-					"string" : "there"
+					"number" : -1, //watchable
+					"string" : "there" //watchable
 				})()
 			})(),
 			"subArrayOfValues" : [
