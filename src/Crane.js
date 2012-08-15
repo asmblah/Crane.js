@@ -28,12 +28,12 @@
 		return this;
 	}
 
-	EventEmitter.prototype.emit = function(event, param) {
+	EventEmitter.prototype.emit = function(event, param1, param2) {
 		var self = this;
 		forEach(self.events, function(v, k) {
 			if (k === event) {
 				forEach(self.events[k], function(v, k) {
-					v(param);
+					v(param1, param2);
 				});
 			}
 		});
@@ -54,12 +54,17 @@
 			console.log("Creating " + name + " model.");
 			var self = this;
 			var crane = global.Crane;
-			var props = {};
+			var props = [];
+			var funcs = [];
+			var models = [];
 			var setters = [];
 			var getters = [];
 
+			crane.addModel(self);
+
 			forEach(model, function(v, p) {
-				if (typeof model[p] != 'function') {
+				if (typeof model[p] != 'function' && typeof model[p] != 'object') {
+					console.log(p + " is a property");
 					props["_"+p] = model[p];
 
 					getters["_"+p] = new EventEmitter(function() {
@@ -82,19 +87,106 @@
 						setters["_"+p].func();
 					});
 				}
+				else if (typeof model[p].prototype !== "undefined") {
+					//Function definition.
+					if (crane.functionDefinitionIsModel(model[p])) {
+						console.log(p + " is a Model definition");
+					}
+					else {
+						console.log(p + " is a Function definition");
+						var functionParameters = crane.getFunctionParams(model[p]);
+						var assignmentRegex = /(=\s*this[;|\r|\n])|(=\s?this$)/g;
+						if (assignmentRegex.test(model[p])) {
+							for (var prop in props) {
+								var propRegex = /_(.+)/g;
+								var res = propRegex.exec(prop);
+								if (functionParameters.indexOf(res[1]) == -1) {
+									functionParameters.push(res[1]);
+								}
+							}
+						}
+						var Context = function() {};
+						for(var r = 0, paramCount = functionParameters.length; r < paramCount; r++) {
+							var param = functionParameters[r];
+							setters["_"+param].on('setter', function() {
+								var ret = funcs["_"+p]();
+								self[p] = ret;
+								self.emit('setter', p);
+								delete self[p];
+							});
+						}
+						funcs["_"+p] = function() {
+							var context = new Context();
+							for(var r = 0, paramCount = functionParameters.length; r < paramCount; r++) {
+								var param = functionParameters[r];
+								context[param] = props["_"+param];
+							}
+							return model[p].apply(context);
+						};
+					}
+				}
+				else if (model[p] instanceof EventEmitter) {
+					if (crane.hasModel(model[p])) {
+						console.log(p + " is an instance of a Model");
+					}
+					else {
+						console.log(p + " is an instance of an EventEmitter");
+					}
+				}
+				else if (typeof model[p].length !== "undefined") {
+					//Array.
+					console.log(p + " is an Array");
+				}
+				else {
+					console.log(p + " is an Object");
+				}
 			});
 
 			var doModelBindings = function() {
 				if (crane.bindings[name]) {
 					var modelBinding = crane.bindings[name];
-					for(property in modelBinding) {
-						if (props["_"+property] !== undefined) {
-							var bindees = modelBinding[property];
-							forEach(bindees, function(v, k) {
-								crane.createDOMBinding(v, self);
+					for(var property in modelBinding) {
+						var boundProperty = false;
+						if (property.indexOf('.') !== -1) {
+							//Sub property.
+							var splitProperties = property.split('.');
+							var previousModel = null;
+							forEach(splitProperties, function(v, k) {
+								if (models["_"+v] !== undefined) {
+									previousModel = models["_"+v];
+								}
+								else {
+									if (previousModel !== null) {
+
+									}
+									else {
+										if (v === splitProperties[0]) {
+											throw new Error("Tried to bind to property: " + property + ", but the parent property: " + v + " is not a Model");
+										}
+										else {
+											throw new Error("Tried to bind to property: " + v + ", but it is a sub property of an object that is not a Model.");
+										}
+									}
+								}
 							});
 						}
-						else {
+
+						if (props["_"+property] !== undefined) {
+							boundProperty = true;
+							var bindees = modelBinding[property];
+							forEach(bindees, function(v, k) {
+								crane.createDOMBinding(v, self, property);
+							});
+						}
+						else if (funcs["_"+property] !== undefined) {
+							boundProperty = true;
+							var bindees = modelBinding[property];
+							forEach(bindees, function(v, k) {
+								crane.createDOMBinding(v, self, property);
+							});
+						}
+						
+						if (!boundProperty) {
 							throw new Error("Tried to bind to property: " + property + ", but it doesn't exist in the Model.");
 						}
 					}
@@ -121,6 +213,7 @@
 	var Crane = function() {
 		var self = this;
 
+		this.models = [];
 		this.bindings = [];
 		this.postBindingCallbacks = [];
 		this.callAfterBinding = null;
@@ -134,7 +227,8 @@
 				var binding = bindings[b];
 				var bindingArray = binding.dataset.crane.split('.');
 				var model = bindingArray[0];
-				var property = bindingArray[1];
+				delete bindingArray[0];
+				var property = bindingArray.join('.').replace(/^\./, '');
 				if (!self.bindings[model]) { self.bindings[model] = []; }
 				if (!self.bindings[model][property]) { self.bindings[model][property] = []; }
 				self.bindings[model][property].push(binding);
@@ -158,7 +252,20 @@
 		else {
 			document.addEventListener('DOMContentLoaded', this.postLoadBindings);
 		}
-	}
+	};
+
+	Crane.prototype.addModel = function(model) {
+		this.models.push(model);
+	};
+
+	Crane.prototype.hasModel = function(model) {
+		var haveModel = false;
+		forEach(this.models, function(v, k) {
+			if (v === model) { haveModel = true; }
+		});
+
+		return haveModel;
+	};
 
 	Crane.prototype.run = function(func) {
 		if (this.madeBindings) {
@@ -173,12 +280,13 @@
 		this.postBindingCallbacks.push(func);
 	};
 
-	Crane.prototype.createDOMBinding = function(element, model) {
+	Crane.prototype.createDOMBinding = function(element, model, bindProperty) {
 		model.on('getter', function(property) {
 			//console.log("getter called on model property: " + property + ", update: " + element);
 		});
 		model.on('setter', function(property) {
 			//console.log("setter called on model property: " + property + ", update: " + element);
+			if (property !== bindProperty) { return; }
 			if (element.nodeName.toLowerCase() !== 'input') {
 				element.innerHTML = element.innerText = model[property];
 			}
@@ -186,9 +294,25 @@
 
 		if (element.nodeName.toLowerCase() === 'input') {
 			element.addEventListener('keyup', function(event) {
-				model[property] = element.value;
+				model[bindProperty] = element.value;
 			});
 		}
+	};
+
+	Crane.prototype.getFunctionParams = function(functionDefinition) {
+		var funcDefString = functionDefinition.toString();
+		funcDefString = funcDefString.replace(/\n|\t/g, ' ').replace(/\s+/g, ' ');
+		var paramRegex = /this\.([a-zA-Z]+[0-9]*)+/g;
+		var match;
+		var functionParameters = [];
+		while ((match = paramRegex.exec(funcDefString)) != null) {
+			functionParameters.push(match[1]);
+		}
+		return functionParameters;
+	};
+
+	Crane.prototype.functionDefinitionIsModel = function(functionDefinition) {
+		return functionDefinition.toString() === (CraneModel({})).toString();
 	};
 
 	global.Crane = new Crane();
