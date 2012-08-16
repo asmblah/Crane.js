@@ -1,4 +1,4 @@
-(function() {
+define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEmitter"], function(WArray, EventEmitter) {
 	var global = (function() { return this; }).call();
 
 	var forEach = function(obj, callback) {
@@ -22,33 +22,6 @@
 		}
 	};
 
-	var EventEmitter = function(func) {
-		this.events = {};
-		this.func = func;
-		return this;
-	}
-
-	EventEmitter.prototype.emit = function(event, param1, param2) {
-		var self = this;
-		forEach(self.events, function(v, k) {
-			if (k === event) {
-				forEach(self.events[k], function(v, k) {
-					v(param1, param2);
-				});
-			}
-		});
-	};
-
-	EventEmitter.prototype.on = function(event, callback) {
-		if(typeof this.events[event] === 'undefined') {
-			this.events[event] = [];
-		}
-
-		this.events[event].push(callback);
-
-		return this;
-	};
-
 	var CraneModel = function(name, model) {
 		var Model = function(name, model) {
 			console.log("Creating " + name + " model.");
@@ -61,6 +34,8 @@
 			var getters = [];
 
 			crane.addModel(self);
+
+			var x = new WArray();
 
 			this.hasProperty = function(propertyName) {
 				return (props["_"+propertyName]!==undefined);
@@ -247,7 +222,7 @@
 		this.madeBindings = false;
 		this.model = CraneModel;
 
-		this.postLoadBindings = function() {
+		this.postLoadBindings = (function() {
 			var bindings = document.querySelectorAll("[data-Crane]");
 
 			for (var b = 0, len = bindings.length; b < len; b++) {
@@ -268,17 +243,7 @@
 			}
 
 			if (self.callAfterBinding) { self.callAfterBinding(); }
-		};
-
-		if (global.craneRunners.length > 0) {
-			global.Crane.postLoadBindings();
-			for (var c = 0, len = global.craneRunners.length; c < len; c++) {
-				global.craneRunners[c]();
-			}
-		}
-		else {
-			document.addEventListener('DOMContentLoaded', this.postLoadBindings);
-		}
+		})();
 	};
 
 	Crane.prototype.addModel = function(model) {
@@ -346,4 +311,4 @@
 	};
 
 	global.Crane = new Crane();
-})();
+});

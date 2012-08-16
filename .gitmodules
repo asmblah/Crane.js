@@ -4,3 +4,6 @@
 [submodule "ext/WatchedArray"]
 	path = ext/WatchedArray
 	url = https://github.com/dave-irvine/WatchedArray.git
+[submodule "ext/EventEmitter"]
+	path = ext/EventEmitter
+	url = https://github.com/dave-irvine/EventEmitter.git

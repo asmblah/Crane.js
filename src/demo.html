@@ -2,9 +2,7 @@
 <html>
 	<head>
 		<title>Crane.js - Do the heavy lifting!</title>
-		<script type="text/javascript">
-			(function() {var t="Crane.js",h=this,n="script",d=document,s=d.createElement(n),e=d.getElementsByTagName(n)[0];s.async=!0;s.src=t;e.parentNode.insertBefore(s,e);h.craneRunners=[];})();
-		</script>
+		<script type="text/javascript" src="../ext/requirejs/require.js" data-main="main"></script>
 	</head>
 	<body>
 		<input type="text" data-crane="User.firstName" />
@@ -17,6 +15,5 @@
 		<div data-crane="User.subModel.number"></div>
 		<div data-crane="User.subNewedModelWithSubNewedModel.subSubNewedModel.number"></div>
 		<div data-crane="User.subArrayOfValues"></div>
-		<script type="text/javascript" src="demoApp.js"></script>
 	</body>
 </html>
