@@ -4,8 +4,8 @@
 	var main = function() {
 		var User = Crane.model("User",
 		{
-			"firstName" : "", //Watchable.
-			"lastName" : "", //Watchable.
+			"firstName" : "Hello", //Watchable.
+			"lastName" : "World", //Watchable.
 			"fullName" : function() {
 				return this.firstName + " " + this.lastName;
 			}, //Watchable
@@ -61,7 +61,7 @@
 			]
 		});
 
-		var usr = new User();
+		global.usr = new User();
 	};
 
 	if (global.Crane === undefined) {

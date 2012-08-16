@@ -156,6 +156,7 @@
 				else if (typeof model[p].length !== "undefined") {
 					//Array.
 					console.log(p + " is an Array");
+					parsePropertyDefinition(model[p], p);
 				}
 				else {
 					console.log(p + " is an Object");
@@ -322,6 +323,9 @@
 			element.addEventListener('keyup', function(event) {
 				model[bindProperty] = element.value;
 			});
+		}
+		else {
+			element.innerHTML = element.innerText = model[bindProperty];
 		}
 	};
 
