@@ -1,3 +1,6 @@
 [submodule "ext/requirejs"]
 	path = ext/requirejs
 	url = https://github.com/jrburke/requirejs.git
+[submodule "ext/WatchedArray"]
+	path = ext/WatchedArray
+	url = https://github.com/dave-irvine/WatchedArray.git
