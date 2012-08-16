@@ -7,3 +7,6 @@
 [submodule "ext/EventEmitter"]
 	path = ext/EventEmitter
 	url = https://github.com/dave-irvine/EventEmitter.git
+[submodule "ext/forEach"]
+	path = ext/forEach
+	url = https://github.com/dave-irvine/forEach.git

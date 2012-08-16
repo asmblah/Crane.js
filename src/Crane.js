@@ -1,26 +1,5 @@
-define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEmitter"], function(WArray, EventEmitter) {
+define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEmitter", "forEach"], function(WArray, EventEmitter, forEach) {
 	var global = (function() { return this; }).call();
-
-	var forEach = function(obj, callback) {
-		var key, length;
-		if(obj) {
-			if (obj.hasOwnProperty("length")) {
-				for (key = 0, length = obj.length; key < length; key += 1) {
-					if (callback.call(obj[key], obj[key], key) === false) {
-						break;
-					}
-				}
-			} else {
-				for (key in obj) {
-					if (obj.hasOwnProperty(key)) {
-						if (callback.call(obj[key], obj[key], key) === false) {
-							break;
-						}
-					}
-				}
-			}
-		}
-	};
 
 	var CraneModel = function(name, model) {
 		var Model = function(name, model) {
