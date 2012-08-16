@@ -1,4 +1,4 @@
-define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEmitter", "forEach"], function(WArray, EventEmitter, forEach) {
+define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEmitter", "../ext/forEach/src/forEach"], function(WArray, EventEmitter, forEach) {
 	var global = (function() { return this; }).call();
 
 	var CraneModel = function(name, model) {
