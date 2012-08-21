@@ -10,3 +10,6 @@
 [submodule "ext/forEach"]
 	path = ext/forEach
 	url = https://github.com/dave-irvine/forEach.git
+[submodule "ext/t.js"]
+	path = ext/t.js
+	url = https://github.com/dave-irvine/t.js.git
