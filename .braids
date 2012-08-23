@@ -2,7 +2,7 @@
 ext/EventEmitter: 
   branch: master
   remote: master/braid/ext/EventEmitter
-  revision: 0bfd1acec5f27fbc71f23023ed0998e2f28e31ae
+  revision: 4321865d07d47d6227187201dccfec2bd186fb3d
   squashed: true
   type: git
   url: https://github.com/dave-irvine/EventEmitter.git

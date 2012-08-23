@@ -7,23 +7,61 @@ define(["../ext/forEach/src/forEach"], function(forEach) {
 
 	EventEmitter.prototype.emit = function(event, param1, param2) {
 		var self = this;
-		forEach(self.events, function(v, k) {
-			if (k === event) {
-				forEach(self.events[k], function(v, k) {
-					v(param1, param2);
-				});
-			}
-		});
+
+		if (self.events[event] !== undefined) {
+			forEach(self.events[event], function(v, k) {
+				v(param1, param2);
+			});
+
+			return true;
+		}
+
+		return false;
 	};
 
 	EventEmitter.prototype.on = function(event, callback) {
-		if(typeof this.events[event] === 'undefined') {
-			this.events[event] = [];
+		var self = this;
+
+		if(typeof self.events[event] === 'undefined') {
+			self.events[event] = [];
 		}
 
-		this.events[event].push(callback);
+		self.events[event].push(callback);
 
-		return this;
+		return self;
+	};
+
+	EventEmitter.prototype.off = function(event, callback) {
+		var self = this;
+
+		if (callback === undefined) {
+			throw new Error("You must specify both an event and a callback to switch off. To switch off all callbacks for this event, try allOff()");
+		}
+
+		if(typeof self.events[event] !== 'undefined') {
+			forEach(self.events[event], function(v, k) {
+				if (v === callback) {
+					delete self.events[event][v];
+					return self;
+				}
+			});
+		}
+		else {
+			throw new Error("No such event");
+		}
+	};
+
+	EventEmitter.prototype.allOff = function(event) {
+		var self = this;
+
+		if(typeof self.events[event] !== 'undefined') {
+			delete self.events[event];
+		}
+		else {
+			throw new Error("No such event");
+		}
+
+		return self;
 	};
 
 	return EventEmitter;

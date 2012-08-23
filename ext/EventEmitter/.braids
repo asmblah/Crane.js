@@ -6,3 +6,27 @@ ext/forEach:
   squashed: true
   type: git
   url: https://github.com/dave-irvine/forEach.git
+vendor/chai: 
+  branch: master
+  lock: 35bec1b89603c679a6cf6f28e685bc552ad6a1e8
+  remote: master/braid/vendor/chai
+  revision: 35bec1b89603c679a6cf6f28e685bc552ad6a1e8
+  squashed: true
+  type: git
+  url: https://github.com/chaijs/chai.git
+vendor/mocha: 
+  branch: master
+  lock: 9331d73e28e480074ffef5186ed1a60e8dc4574d
+  remote: master/braid/vendor/mocha
+  revision: 9331d73e28e480074ffef5186ed1a60e8dc4574d
+  squashed: true
+  type: git
+  url: https://github.com/visionmedia/mocha.git
+vendor/requirejs: 
+  branch: master
+  lock: e8a40a9849bc4065ad3f0d492e2643fa39493f98
+  remote: master/braid/vendor/requirejs
+  revision: e8a40a9849bc4065ad3f0d492e2643fa39493f98
+  squashed: true
+  type: git
+  url: https://github.com/jrburke/requirejs.git
