@@ -1,4 +1,11 @@
 --- 
+ext/EventEmitter: 
+  branch: master
+  remote: master/braid/ext/EventEmitter
+  revision: 0bfd1acec5f27fbc71f23023ed0998e2f28e31ae
+  squashed: true
+  type: git
+  url: https://github.com/dave-irvine/EventEmitter.git
 ext/WatchedArray: 
   branch: master
   remote: master/braid/ext/WatchedArray

@@ -1,0 +1,8 @@
+--- 
+ext/forEach: 
+  branch: master
+  remote: master/braid/ext/forEach
+  revision: 725d29babdf6968a86d78a5ad8cd6b6c24a52518
+  squashed: true
+  type: git
+  url: https://github.com/dave-irvine/forEach.git
