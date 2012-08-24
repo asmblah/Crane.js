@@ -46,7 +46,7 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 									(function() {
 										var index = i;
 										self.__defineGetter__(i, function() {
-											emitter.emit('getter', index, _array);
+											emitter.emit('get', index, _array);
 											return _array[index];
 										});
 									})();
@@ -54,10 +54,10 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 										var index = i;
 										self.__defineSetter__(i, function(val) {
 											_array[index] = val;
-											emitter.emit('setter', index, _array);
+											emitter.emit('set', index, _array);
 										});
 									})();
-									emitter.emit('setter', i, _array);
+									emitter.emit('set', i, _array);
 								}
 							}
 						}

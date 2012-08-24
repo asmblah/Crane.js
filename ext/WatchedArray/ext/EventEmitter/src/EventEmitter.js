@@ -41,7 +41,7 @@ define(["../ext/forEach/src/forEach"], function(forEach) {
 		if(typeof self.events[event] !== 'undefined') {
 			forEach(self.events[event], function(v, k) {
 				if (v === callback) {
-					delete self.events[event][v];
+					self.events[event].splice(k, 1);
 					return self;
 				}
 			});
