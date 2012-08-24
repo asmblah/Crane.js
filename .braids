@@ -6,6 +6,13 @@ ext/EventEmitter:
   squashed: true
   type: git
   url: https://github.com/dave-irvine/EventEmitter.git
+ext/JSArgCheck: 
+  branch: master
+  remote: master/braid/ext/JSArgCheck
+  revision: 9be3d559cc494ce53d889989e43228faecbc61ba
+  squashed: true
+  type: git
+  url: https://github.com/dave-irvine/JSArgCheck.git
 ext/WatchedArray: 
   branch: master
   remote: master/braid/ext/WatchedArray
