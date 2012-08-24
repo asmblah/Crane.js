@@ -16,7 +16,7 @@ ext/JSArgCheck:
 ext/WatchedArray: 
   branch: master
   remote: master/braid/ext/WatchedArray
-  revision: d0a4a8e3834d92bdeb15ca1b477c3a7e941b7254
+  revision: 3357b684476386682caa71d69094d628a0f18807
   squashed: true
   type: git
   url: https://github.com/dave-irvine/WatchedArray.git
