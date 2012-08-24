@@ -57,7 +57,7 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 											emitter.emit('set', index, val);
 										});
 									})();
-									emitter.emit('set', i, _array[i]);
+									emitter.emit('push', i, _array[i]);
 								}
 							}
 						}
