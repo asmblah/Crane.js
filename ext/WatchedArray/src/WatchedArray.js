@@ -84,6 +84,9 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 			Wrapper.on = function(event, callback) {
 				emitter.on.apply(emitter, [event,callback]);
 			};
+			Wrapper.emit = function(event, param1, param2) {
+				emitter.emit.apply(emitter, [event, param1, param2]);
+			};
 
 			return Wrapper;
 		})();
