@@ -1,58 +1,89 @@
 define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEmitter", "../ext/forEach/src/forEach", "../ext/JSArgCheck/src/JSArgCheck"], function(WArray, EventEmitter, forEach, JSArgCheck) {
 	var global = (function() { return this; }).call();
 
-	var Model = function Model(name, definition) {
+	var isNumber = function(n) {
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	};
+
+	var PropertyStack = function PropertyStack(parentPropStack) {
+		var stack = [];
+		var parentStack = false;
+
+		if (parentPropStack !== undefined) {
+			parentStack = true;
+			var pStack = parentPropStack.getStack();
+			for(var p = 0, len = pStack.length; p < len; p++) {
+				stack.push(pStack[p]);
+			}
+		}
+
+		this.toString = function() {
+			var sString = "";
+			for(var s = 0, len = stack.length; s < len; s++) {
+				var sObj = stack[s];
+				sString += (isNumber(sObj)) ? "[" + sObj + "]" : "." + sObj;
+			}
+			return sString.replace(/^\.*/, '');
+		};
+
+		this.addPropertyName = function(propName) {
+			if (!parentStack) {
+				if (stack[0] !== propName) {
+					if (!isNumber(propName)) {
+						stack = [propName];
+					}
+					else {
+						stack.push(propName);
+					}
+				}
+			}
+			else {
+				stack.push(propName);
+			}
+		};
+
+		this.getStack = function() {
+			return stack;
+		}
+	};
+
+	var Model = function Model(name, definition, parent) {
 		this.constructor();
 		var self = this;
 
 		self.name = name;
 		self.notifiers = {};
+		self.propertyStack = new PropertyStack((parent !== undefined) ? parent.propertyStack : undefined);
 
 		//Iterate definition properties.
 		forEach(definition, function(v, k) {
 			var defineSettersAndGetters = function(propValue, propKey, isWArray) {
+				self.propertyStack.addPropertyName(propKey);
 				var closuredValue = propValue;
+				var propertyStackValue = self.propertyStack.toString();
 
-				(function() {
-					var closuredSelf = self;
-					self.__defineGetter__(propKey, function() {
-						return closuredValue;
-					});
-				})();
+				self.__defineGetter__(propKey, function() {
+					return closuredValue;
+				});
 
 				if (typeof closuredValue === "object") {
 					if (closuredValue.length === undefined) {
-						closuredValue = new Model(propKey, closuredValue);
-						closuredValue.on('set', function(propName, propValue) {
-							self.emit('set', propKey + "." + propName, propValue);
-						});
+						closuredValue = new Model(propKey, closuredValue, self);
 					}
 					else {
 						var w = new WArray(closuredValue);
 						for (var a = 0, arrayLength = w.length; a < arrayLength; a++) {
 							var arrayElement = w[a];
-							defineSettersAndGetters(arrayElement, a, w);
-							if (w[a] instanceof Model) {
-								(function() {
-									var closuredCount = a;
-									w[a].on('set', function(propName, propValue) {
-										self.emit('set', propKey + "[" + closuredCount + "]." + propName, propValue);
-									});
-								})();
-							}
+							w[a] = defineSettersAndGetters(arrayElement, a, w);
 						}
 						closuredValue = w;
 						closuredValue.on('set', function(propName, propValue) {
-							self.emit('set', propKey + "[" + propName + "]", propValue);
+							self.emit('set', propertyStackValue + "[" + propName + "]", propValue);
 						});
 						closuredValue.on('push', function(propName, propValue) {
-							self.emit('set', propKey, propValue);
+							self.emit('set', propertyStackValue, propValue);
 						});
 					}
-				}
-
-				if (isWArray !== undefined) {
-					isWArray[propKey] = closuredValue;
 				}
 
 				(function() {
@@ -60,16 +91,20 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 					self.__defineSetter__(propKey, function(val) {
 						closuredValue = val;
 						defineSettersAndGetters(closuredValue, propKey);
-						closuredSelf.emit('set', propKey, closuredValue);
+						self.emit('set', propertyStackValue, closuredValue);
 					});
 				})();
-			}
+
+				return closuredValue;
+			};
 			defineSettersAndGetters(v, k);
 		});
 
 		self.on('set', function(propName, propValue) {
-			console.log(propName + " was set to: " + propValue);
-			if (self.notifiers[propName] !== undefined) {
+			if (parent !== undefined) {
+				parent.emit('set', propName, propValue);
+			}
+			else if (self.notifiers[propName] !== undefined) {
 				forEach(self.notifiers[propName], function(v, k) {
 					v(propValue);
 				});
@@ -129,7 +164,6 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 
 	var Crane = function Crane() {
 		this.model = modelWrap;
-		this.propertyStack = "";
 	};
 
 	global.crane = new Crane();

@@ -188,7 +188,7 @@ require(["../src/Crane.js"], function() {
 				craneModel.notify('favouriteFoods', function() {
 					done();
 				});
-				craneModel.favouriteFoods.splice(0, 1);
+				craneModel.favouriteFoods.pop();
 			});
 		});
 	});
