@@ -11,10 +11,7 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 
 		if (parentPropStack !== undefined) {
 			parentStack = true;
-			var pStack = parentPropStack.getStack();
-			for(var p = 0, len = pStack.length; p < len; p++) {
-				stack.push(pStack[p]);
-			}
+			stack = parentPropStack.getStack().splice(0);
 		}
 
 		this.toString = function() {
@@ -83,6 +80,9 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 						closuredValue.on('push', function(propName, propValue) {
 							self.emit('set', propertyStackValue, propValue);
 						});
+						closuredValue.on('pop', function(newLength) {
+							self.emit('pop', propertyStackValue, newLength);
+						});
 					}
 				}
 
@@ -107,6 +107,17 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 			else if (self.notifiers[propName] !== undefined) {
 				forEach(self.notifiers[propName], function(v, k) {
 					v(propValue);
+				});
+			}
+		});
+
+		self.on('pop', function(propName, newLength) {
+			if (parent !== undefined) {
+				parent.emit('pop', propName, newLength);
+			}
+			else if (self.notifiers[propName] !== undefined) {
+				forEach(self.notifiers[propName], function(v, k) {
+					v(newLength);
 				});
 			}
 		});
