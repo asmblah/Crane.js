@@ -1,5 +1,5 @@
 require(["../src/Crane.js"], function() {
-	describe('Crane', function() {
+	describe('Crane.js', function() {
 		var modelDef = {
 			firstName : "John",
 			lastName : "Doe",
@@ -117,7 +117,7 @@ require(["../src/Crane.js"], function() {
 			});
 		});
 
-		describe('Emitters', function() {
+		describe('Notifiers', function() {
 			it('should notify when firstName is set', function(done){
 				craneModel.notify('firstName', function() {
 					done();
