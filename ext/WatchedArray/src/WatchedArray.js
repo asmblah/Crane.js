@@ -73,6 +73,9 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 						delete this[i];
 					}
 					length = constrainedValue;
+					if (length < lastLength) {
+						emitter.emit('pop', length);
+					}
 					lastLength = length;
 				}
 			};
