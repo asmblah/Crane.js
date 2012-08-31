@@ -45,8 +45,38 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 	};
 
 	var Model = function Model(name, definition, parent) {
-		this.constructor();
-		var self = this;
+		// Support accessorIE shim
+		var self = Object.create(null),
+			key,
+			values = Model.prototype;
+
+		EventEmitter.call(self);
+
+		// Copy Model.prototype over to object
+        for (key in values) {
+        	self[key] = values[key];
+        }
+
+		Object.defineProperties(self, {
+            __defineGetter__: {
+                enumerable: false,
+                value: function (propertyName, fn) {
+                    Object.defineProperty(self, propertyName, {
+                        get: fn,
+                        configurable: true
+                    });
+                }
+            },
+            __defineSetter__: {
+                enumerable: false,
+                value: function (propertyName, fn) {
+                    Object.defineProperty(self, propertyName, {
+                        set: fn,
+                        configurable: true
+                    });
+                }
+            }
+        });
 
 		self.name = name;
 		self.notifiers = {};
@@ -121,6 +151,8 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 				});
 			}
 		});
+
+		return self;
 	};
 
 	Model.prototype = Object.create(EventEmitter.prototype);
