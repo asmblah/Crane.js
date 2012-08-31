@@ -2,28 +2,10 @@
 <html>
 	<head>
 		<title>Crane.js - Do the heavy lifting!</title>
-		<script type="text/javascript" src="../ext/requirejs/require.js" data-main="main"></script>
+		<!--[if lt IE 9]><script type="text/javascript" src="../vendor/accessorIE/js/accessorIE.js"></script><![endif]-->
+		<script type="text/javascript" src="../vendor/requirejs/require.js" data-main="main"></script>
 	</head>
 	<body>
-		
-		<input type="text" data-crane="User.firstName" />
-		<div data-crane="User.firstName">Here is some pretext</div>
-		<input type="text" data-crane="User.lastName" />
-		<input type="text" data-crane="User.subModel.number" />
-		<input type="text" data-crane="User.subNewedModelWithSubNewedModel.subSubNewedModel.number" />
-		<div data-crane="User.funcInFunc"></div>
-		<div data-crane="User.subModel.number"></div>
-		<div data-crane="User.subNewedModelWithSubNewedModel.subSubNewedModel.number"></div>
-		<div data-crane="User.subArrayOfValues"></div>
-		<div data-crane="User.funcWithArray"></div>
-		<input type="text" data-crane="User.subObjectWithProperties.objProp" />
-		<div data-crane="User.subObjectWithProperties.objProp"></div>
-		<div data-crane="User.arrayOfObjects"></div>
-		<script type="text/html" data-t-renderType="self">
-			User.arrayOfObjects
-			(
-				<label>{{label}} <input type="checkbox" value="{{_value}}" name="arrayOfObjects[]" {{(cast(!!, checked)) ? "checked" : ""}} data-crane="User.arrayOfObjects[{{key}}].checked->checked" /></label>
-			);
-		</script>
+		Notified: <span id="notified">No :(</span>
 	</body>
 </html>
