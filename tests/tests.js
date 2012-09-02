@@ -90,9 +90,9 @@ require(["../src/Crane.js"], function() {
 
 			describe('#name', function() {
 				it('name should be "Person"', function() {
-					should.exist(craneModel.name);
-					craneModel.name.should.be.a('string');
-					craneModel.name.should.equal("Person");
+					expect(craneModel.name).to.exist;
+					expect(craneModel.name).to.be.a("string");
+					expect(craneModel.name).to.equal("Person");
 				});
 			});
 		});
@@ -100,19 +100,19 @@ require(["../src/Crane.js"], function() {
 		describe('Properties', function(){
 			describe('#firstName', function(){
 				it('should return "John"', function(){
-					craneModel.firstName.should.be.a('string');
-					craneModel.firstName.should.equal("John");
+					expect(craneModel.firstName).to.be.a("string");
+					expect(craneModel.firstName).to.equal("John");
 				});
 			});
 			describe('#lastName', function(){
 				it('should return "Doe"', function(){
-					craneModel.lastName.should.be.a('string');
-					craneModel.lastName.should.equal("Doe");
+					expect(craneModel.lastName).to.be.a("string");
+					expect(craneModel.lastName).to.equal("Doe");
 				});
 			});
 			describe('#favouriteFoods', function(){
 				it('should have a length of 3', function(){
-					craneModel.favouriteFoods.length.should.equal(3);
+					expect(craneModel.favouriteFoods.length).to.equal(3);
 				});
 			});
 		});
