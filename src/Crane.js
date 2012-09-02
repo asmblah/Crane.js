@@ -11,7 +11,7 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 
 		if (parentPropStack !== undefined) {
 			parentStack = true;
-			stack = parentPropStack.getStack().splice(0);
+			stack = parentPropStack.getStack().slice();
 		}
 
 		this.toString = function() {
