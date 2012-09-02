@@ -37,7 +37,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model(modelDef))();
 				}
 
-				expect(fn).to.throw("modelName does not match type");
+				expect(fn).to.Throw("modelName does not match type");
 			});
 
 			it('should require a definition.', function() {
@@ -45,7 +45,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("Person"))();
 				}
 
-				expect(fn).to.throw("Missing argument: modelDef");
+				expect(fn).to.Throw("Missing argument: modelDef");
 			});
 
 			it('should require a name and a definition.', function() {
@@ -53,7 +53,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model())();
 				}
 
-				expect(fn).to.throw("Missing argument: modelName");
+				expect(fn).to.Throw("Missing argument: modelName");
 			});
 
 			it('should require name to be a string.', function() {
@@ -61,7 +61,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model([],{}))();
 				}
 
-				expect(fn).to.throw("modelName does not match type");
+				expect(fn).to.Throw("modelName does not match type");
 			});
 
 			it('should require name not be blank.', function() {
@@ -69,7 +69,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("",{}))();
 				}
 
-				expect(fn).to.throw("modelName does not meet minimum length");
+				expect(fn).to.Throw("modelName does not meet minimum length");
 			});
 
 			it('should require definition to be an object.', function() {
@@ -77,7 +77,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("Person",""))();
 				}
 
-				expect(fn).to.throw("modelDef does not match type");
+				expect(fn).to.Throw("modelDef does not match type");
 			});
 
 			it('should require definition to have at least one property.', function() {
@@ -85,7 +85,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("Person",{}))();
 				}
 
-				expect(fn).to.throw("modelDef does not meet minimum keys");
+				expect(fn).to.Throw("modelDef does not meet minimum keys");
 			});
 
 			describe('#name', function() {
