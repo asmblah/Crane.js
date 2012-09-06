@@ -24,6 +24,16 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 			return maxIndex;
 		};
 
+		function hasGetter(obj, name) {
+			var descriptor = Object.getOwnPropertyDescriptor(obj, name);
+			return descriptor && descriptor.get;
+		}
+
+		function hasSetter(obj, name) {
+			var descriptor = Object.getOwnPropertyDescriptor(obj, name);
+			return descriptor && descriptor.set;
+		}
+
 		return (function(methods) {
 			var _array = [];
 			var emitter = new EventEmitter();
@@ -41,20 +51,19 @@ define(["../ext/EventEmitter/src/EventEmitter"], function(EventEmitter) {
 						lastLength = length;
 						for (var i = 0; i < lastLength; i++) {
 							if (this[i] !== undefined) {
-								if (!this.__lookupGetter__(i)) {
+								if (!hasGetter(this, i)) {
 									_array[i] = this[i];
 									(function() {
 										var index = i;
-										self.__defineGetter__(i, function() {
-											emitter.emit('get', index, _array[index]);
-											return _array[index];
-										});
-									})();
-									(function() {
-										var index = i;
-										self.__defineSetter__(i, function(val) {
-											_array[index] = val;
-											emitter.emit('set', index, val);
+										Object.defineProperty(self, i, {
+											get: function() {
+												emitter.emit('get', index, _array[index]);
+												return _array[index];
+											},
+											set: function(val) {
+												_array[index] = val;
+												emitter.emit('set', index, val);
+											}
 										});
 									})();
 									emitter.emit('push', i, _array[i]);
