@@ -37,7 +37,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model(modelDef))();
 				}
 
-				expect(fn).to.throw("modelName does not match type");
+				expect(fn).to.Throw("modelName does not match type");
 			});
 
 			it('should require a definition.', function() {
@@ -45,7 +45,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("Person"))();
 				}
 
-				expect(fn).to.throw("Missing argument: modelDef");
+				expect(fn).to.Throw("Missing argument: modelDef");
 			});
 
 			it('should require a name and a definition.', function() {
@@ -53,7 +53,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model())();
 				}
 
-				expect(fn).to.throw("Missing argument: modelName");
+				expect(fn).to.Throw("Missing argument: modelName");
 			});
 
 			it('should require name to be a string.', function() {
@@ -61,7 +61,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model([],{}))();
 				}
 
-				expect(fn).to.throw("modelName does not match type");
+				expect(fn).to.Throw("modelName does not match type");
 			});
 
 			it('should require name not be blank.', function() {
@@ -69,7 +69,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("",{}))();
 				}
 
-				expect(fn).to.throw("modelName does not meet minimum length");
+				expect(fn).to.Throw("modelName does not meet minimum length");
 			});
 
 			it('should require definition to be an object.', function() {
@@ -77,7 +77,7 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("Person",""))();
 				}
 
-				expect(fn).to.throw("modelDef does not match type");
+				expect(fn).to.Throw("modelDef does not match type");
 			});
 
 			it('should require definition to have at least one property.', function() {
@@ -85,14 +85,14 @@ require(["../src/Crane.js"], function() {
 					new (crane.model("Person",{}))();
 				}
 
-				expect(fn).to.throw("modelDef does not meet minimum keys");
+				expect(fn).to.Throw("modelDef does not meet minimum keys");
 			});
 
 			describe('#name', function() {
 				it('name should be "Person"', function() {
-					should.exist(craneModel.name);
-					craneModel.name.should.be.a('string');
-					craneModel.name.should.equal("Person");
+					expect(craneModel.name).to.exist;
+					expect(craneModel.name).to.be.a("string");
+					expect(craneModel.name).to.equal("Person");
 				});
 			});
 		});
@@ -100,19 +100,19 @@ require(["../src/Crane.js"], function() {
 		describe('Properties', function(){
 			describe('#firstName', function(){
 				it('should return "John"', function(){
-					craneModel.firstName.should.be.a('string');
-					craneModel.firstName.should.equal("John");
+					expect(craneModel.firstName).to.be.a("string");
+					expect(craneModel.firstName).to.equal("John");
 				});
 			});
 			describe('#lastName', function(){
 				it('should return "Doe"', function(){
-					craneModel.lastName.should.be.a('string');
-					craneModel.lastName.should.equal("Doe");
+					expect(craneModel.lastName).to.be.a("string");
+					expect(craneModel.lastName).to.equal("Doe");
 				});
 			});
 			describe('#favouriteFoods', function(){
 				it('should have a length of 3', function(){
-					craneModel.favouriteFoods.length.should.equal(3);
+					expect(craneModel.favouriteFoods.length).to.equal(3);
 				});
 			});
 		});

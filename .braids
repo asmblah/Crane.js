@@ -16,7 +16,7 @@ ext/JSArgCheck:
 ext/WatchedArray: 
   branch: master
   remote: master/braid/ext/WatchedArray
-  revision: 783bb07b8f7ca8a2bc36637c6d5e9c9643391b83
+  revision: 2eb91479304d7d51ec6cbf1992bdeb1a8104ab14
   squashed: true
   type: git
   url: https://github.com/dave-irvine/WatchedArray.git
@@ -37,18 +37,17 @@ ext/t.js:
 vendor/accessorIE: 
   branch: master
   remote: master/braid/vendor/accessorIE
-  revision: 1852b0ef08d4e529d4c206dc1070b794deb6168d
+  revision: af4467845a627d51c0c0b50590f1c7b8dcc6e919
   squashed: true
   type: git
   url: https://github.com/asmblah/accessorIE.git
 vendor/chai: 
   branch: master
-  lock: 35bec1b89603c679a6cf6f28e685bc552ad6a1e8
   remote: master/braid/vendor/chai
-  revision: 35bec1b89603c679a6cf6f28e685bc552ad6a1e8
+  revision: ea2ea9f4a13f86f08d0e0fe2809d266de8c2f04e
   squashed: true
   type: git
-  url: https://github.com/chaijs/chai.git
+  url: git://github.com/asmblah/chai.git
 vendor/mocha: 
   branch: master
   lock: 9331d73e28e480074ffef5186ed1a60e8dc4574d
