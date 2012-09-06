@@ -8,7 +8,8 @@
  * Module dependencies.
  */
 
-var path = require('path');
+var path = require('path')
+  , utils = require('./utils');
 
 /**
  * Expose `Mocha`.
@@ -20,7 +21,7 @@ exports = module.exports = Mocha;
  * Expose internals.
  */
 
-exports.utils = require('./utils');
+exports.utils = utils;
 exports.interfaces = require('./interfaces');
 exports.reporters = require('./reporters');
 exports.Runnable = require('./runnable');
@@ -66,7 +67,7 @@ function Mocha(options) {
   this.suite = new exports.Suite('', new exports.Context);
   this.ui(options.ui);
   this.reporter(options.reporter);
-  if (options.timeout) this.suite.timeout(options.timeout);
+  if (options.timeout) this.timeout(options.timeout);
 }
 
 /**
@@ -82,16 +83,24 @@ Mocha.prototype.addFile = function(file){
 };
 
 /**
- * Set reporter to `name`, defaults to "dot".
+ * Set reporter to `reporter`, defaults to "dot".
  *
- * @param {String} name
+ * @param {String|Function} reporter name of a reporter or a reporter constructor
  * @api public
  */
 
-Mocha.prototype.reporter = function(name){
-  name = name || 'dot';
-  this._reporter = require('./reporters/' + name);
-  if (!this._reporter) throw new Error('invalid reporter "' + name + '"');
+Mocha.prototype.reporter = function(reporter){
+  if ('function' == typeof reporter) {
+    this._reporter = reporter;
+  } else {
+    reporter = reporter || 'dot';
+    try {
+      this._reporter = require('./reporters/' + reporter);
+    } catch (err) {
+      this._reporter = require(reporter);
+    }
+    if (!this._reporter) throw new Error('invalid reporter "' + reporter + '"');
+  }
   return this;
 };
 
@@ -154,16 +163,16 @@ Mocha.prototype._growl = function(runner, reporter) {
 };
 
 /**
- * Add regexp to grep for to the options object
+ * Add regexp to grep, if `re` is a string it is escaped.
  *
- * @param {RegExp} or {String} re
+ * @param {RegExp|String} re
  * @return {Mocha}
  * @api public
  */
 
 Mocha.prototype.grep = function(re){
   this.options.grep = 'string' == typeof re
-    ? new RegExp(re)
+    ? new RegExp(utils.escapeRegexp(re))
     : re;
   return this;
 };
@@ -205,15 +214,28 @@ Mocha.prototype.growl = function(){
 };
 
 /**
- * Ignore `globals`.
+ * Ignore `globals` array or string.
  *
- * @param {Array} globals
+ * @param {Array|String} globals
  * @return {Mocha}
  * @api public
  */
 
 Mocha.prototype.globals = function(globals){
-  this.options.globals = globals;
+  this.options.globals = (this.options.globals || []).concat(globals);
+  return this;
+};
+
+/**
+ * Set the timeout in milliseconds.
+ *
+ * @param {Number} timeout
+ * @return {Mocha}
+ * @api public
+ */
+
+Mocha.prototype.timeout = function(timeout){
+  this.suite.timeout(timeout);
   return this;
 };
 

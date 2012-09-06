@@ -1,4 +1,23 @@
 
+1.4.2 / 2012-09-01 
+==================
+
+  * add support to multiple `Mocha#globals()` calls, and strings
+  * add `mocha.reporter()` constructor support [joliss]
+  * add `mocha.timeout()`
+  * move query-string parser to utils.js
+  * move highlight code to utils.js
+  * fix third-party reporter support [exogen]
+  * fix client-side API to match node-side [jfirebaugh]
+  * fix mocha in iframe [joliss]
+
+1.4.1 / 2012-08-28 
+==================
+
+  * add missing `Markdown` export
+  * fix `Mocha#grep()`, escape regexp strings
+  * fix reference error when `devicePixelRatio` is not defined. Closes #549
+
 1.4.0 / 2012-08-22 
 ==================
 
@@ -7,6 +26,7 @@
   * add `.skip()`. Closes #524
   * change str.trim() to use utils.trim(). Closes #533
   * fix HTML progress indicator retina display
+  * fix url-encoding of click-to-grep HTML functionality
 
 1.3.2 / 2012-08-01 
 ==================
