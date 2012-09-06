@@ -46,7 +46,7 @@ define(["../ext/WatchedArray/src/WatchedArray", "../ext/EventEmitter/src/EventEm
 
 	var Model = function Model(name, definition, parent) {
 		// Support accessorIE shim
-		var self = Object.create(null),
+		var self = Object.create(Object.prototype, {}),
 			key,
 			values = Model.prototype;
 
