@@ -37,7 +37,7 @@ ext/t.js:
 vendor/accessorIE: 
   branch: master
   remote: master/braid/vendor/accessorIE
-  revision: 9d61404516e20971b320858a5c1b50af984d0252
+  revision: 3114a255850793463262e416f59175e8f7dfd435
   squashed: true
   type: git
   url: https://github.com/asmblah/accessorIE.git
